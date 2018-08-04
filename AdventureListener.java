@@ -4,17 +4,15 @@ import javax.swing.*;
 
 class AdventureListener implements ActionListener {
   private Player player;
-  private Zombie zombieA = new Zombie();
-  private Zombie zombieB = new Zombie();
+  private Zombie zombieA;
+  private Zombie zombieB;
   private Ammo ammo;
   private Random rand = new Random();
-  //private int ammo = 3;
-  //private int hp = 4; 
-  //private int zombieHp = 1;
   private JTextArea output;
-  AdventureListener(Player player, Ammo ammo, JTextArea output) {
+  AdventureListener(Player player, Zombie zombieA, Zombie zombieB, Ammo ammo, JTextArea output) {
       this.player = player;
-      //this.zombie = zombie;
+      this.zombieA = zombieA;
+      this.zombieB = zombieB;
       this.ammo = ammo;
       this.output = output;
   }
@@ -42,7 +40,8 @@ class AdventureListener implements ActionListener {
     else if(e.getActionCommand().equals("north")) {
       action = Adventure.enter(player, player.getLocation().north());
       //zombieHp = 1; //This just sets the zombies health back to one after you leave a room
-        if(player.getLocation().contains("zombie") && (zombieA.getZombieHp() != 0 || zombieB.getZombieHp() != 0)) {//checks to see if there is a zombie
+        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 || 
+            zombieB.getZombieHp() != 0)) {//checks to see if there is a zombie
           action = Adventure.enter(player, player.getLocation()) + "A zombie launches itself at you from the corner of the room";
         }
     }
@@ -50,7 +49,7 @@ class AdventureListener implements ActionListener {
      else if(e.getActionCommand().equals("south")) {
        action = Adventure.enter(player, player.getLocation().south());
        //zombieHp = 1;
-        if(player.getLocation().contains("zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
+        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
           action =  Adventure.enter(player, player.getLocation()) + "You hear some growling in the dark room";
         }
       }
@@ -58,7 +57,7 @@ class AdventureListener implements ActionListener {
      else if (e.getActionCommand().equals("east")) {
        action = Adventure.enter(player, player.getLocation().east());
        //zombieHp = 1;
-        if(player.getLocation().contains("zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
+        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
           action =  Adventure.enter(player, player.getLocation()) + "A zombie launches at you";
         }
       }
@@ -66,7 +65,7 @@ class AdventureListener implements ActionListener {
       else if (e.getActionCommand().equals("west")) {
         action = Adventure.enter(player, player.getLocation().west());
         //zombieHp = 1;
-        if(player.getLocation().contains("zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
+        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
           action = Adventure.enter(player, player.getLocation()) + "You smell the rotten flesh of a zombie in the room";
         }
       }
@@ -76,15 +75,30 @@ class AdventureListener implements ActionListener {
         if(gn == null){
           action = "You don't have a gun...";
         }
-        if(!player.getLocation().contains("zombie") || zombie.getZombieHp() == 0 || gn ==null){ //Makes it so that you can only shoot at zombies
-          action = "There's nothing to shoot at...";
+        else if(!player.getLocation().contains("zombie") && zombieA.getZombieHp() == 0){ //Makes it so that you can only shoot at zombies
+          action = "There's nothing to shoot at... line 82";
         }
-        else if(player.getLocation().contains("zombie") && zombie.getZombieHp() == 1 && chance == 2 && ammo.getBullets() > 0){ //Checks if the rng landed on 2. If yes then you shoot the zombie
+        else if(!player.getLocation().contains("bloody zombie") && zombieB.getZombieHp() == 0) {
+          action = "There's nothing to shoot at... line 85";
+        }
+        //ZombieA
+        else if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() == 1 && chance == 2 && ammo.getBullets() > 0){ //Checks if the rng landed on 2. If yes then you shoot the zombie
           Gun gun = (Gun)gn;
           ammo.decreaseAmmo(ammo);
-          zombie.decreaseHealth(zombie);
+          zombieA.decreaseHealth(zombieA);
           action = gun.shoot() + "\nRounds: " +ammo.getBullets();
-        }else if(player.getLocation().contains("zombie") && zombie.getZombieHp() == 1 && chance == 1 && ammo.getBullets() > 0){//Checks if rng landed on 1. If yes then you miss
+        }else if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() == 1 && chance == 1 && ammo.getBullets() > 0){//Checks if rng landed on 1. If yes then you miss
+          Gun gun = (Gun)gn;
+          ammo.decreaseAmmo(ammo);
+          player.reduceHealth(player);
+          action = gun.miss() + "\nRounds: " +ammo.getBullets() + "\nThe zombie took a chunk off your shoulder \n" + "Health: " +player.getHealth();
+        }//ZombieB
+        else if(player.getLocation().contains("zombie") && zombieB.getZombieHp() == 1 && chance == 2 && ammo.getBullets() > 0){ //Checks if the rng landed on 2. If yes then you shoot the zombie
+          Gun gun = (Gun)gn;
+          ammo.decreaseAmmo(ammo);
+          zombieB.decreaseHealth(zombieB);
+          action = gun.shoot() + "\nRounds: " +ammo.getBullets();
+        }else if(player.getLocation().contains("zombie") && zombieB.getZombieHp() == 1 && chance == 1 && ammo.getBullets() > 0){//Checks if rng landed on 1. If yes then you miss
           Gun gun = (Gun)gn;
           ammo.decreaseAmmo(ammo);
           player.reduceHealth(player);
@@ -96,13 +110,22 @@ class AdventureListener implements ActionListener {
       }
       
       else if (e.getActionCommand().equals("look")) {
-        action = Adventure.look(player);
-        if(zombie.getZombieHp() == 0){
-          action = action = Adventure.look(player) + "\nThe zombie lays motionless on the ground";
+        if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() == 0){
+          action = Adventure.look(player) + "\nThe zombie lays motionless on the ground";
         }
-        if(player.getLocation().contains("zombie") && zombie.getZombieHp() > 0){//Checks to see if there is a zombie and makes it so that the zombie attacks if you are looking around the room 
+        else if(player.getLocation().contains("zombie") && zombieB.getZombieHp() == 0){
+          action = Adventure.look(player) + "\nThe zombie lays motionless on the ground";
+        }
+        else if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() > 0 ) {//Checks to see if there is a zombie and makes it so that the zombie attacks if you are looking around the room 
           player.reduceHealth(player);
-          action = action = Adventure.look(player) + "\nThe zombie took a chunk off your shoulder \n" + "Health: " +player.getHealth();
+          action = Adventure.look(player) + "\nThe zombie took a chunk off your shoulder \n" + "Health: " +player.getHealth();
+        }
+        else if(player.getLocation().contains("zombie") && zombieB.getZombieHp() > 0 ) {//Checks to see if there is a zombie and makes it so that the zombie attacks if you are looking around the room 
+          player.reduceHealth(player);
+          action = Adventure.look(player) + "\nThe zombie took a chunk off your shoulder \n" + "Health: " +player.getHealth();
+        }
+        else{
+          action = Adventure.look(player);
         }
       }
       
@@ -110,7 +133,11 @@ class AdventureListener implements ActionListener {
       else if(e.getActionCommand().equals("pickup")) {
         String input = JOptionPane.showInputDialog("Type what you want to pickup");
         action = Adventure.pickup(player, input); // MAGIC NUMBER length of pickup plus a space
-        if(player.getLocation().contains("zombie") && zombie.getZombieHp() > 0){//We didn't want players to simply pick up an object and leave without getting harmed
+        if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() > 0 ) {//Didn't want players to simply pick up an object and leave without getting harmed
+          player.reduceHealth(player);
+          action = "The zombie took a chunk off your shoulder\n" + "Health: " +player.getHealth();
+        }
+        if(player.getLocation().contains("zombie") && zombieB.getZombieHp() > 0 ) {//Didn't want players to simply pick up an object and leave without getting harmed
           player.reduceHealth(player);
           action = "The zombie took a chunk off your shoulder\n" + "Health: " +player.getHealth();
         }

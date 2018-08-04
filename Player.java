@@ -55,7 +55,17 @@ public class Player {
    * @return true if the player can carry thing, false otherwise
    */
   boolean canCarry(Thing thing) {
+    if(thing.name().equals("zombie") || thing.name().equals("bloody zombie")){
+      return false;
+    }
     return (pack.size() < MAX_THINGS);
+  }
+
+  boolean carryZombie(Thing thing) {
+    if(thing.name().equals("zombie") || thing.name().equals("bloody zombie")){
+      return true;
+    }
+    return false;
   }
   
   /**
@@ -85,6 +95,12 @@ public class Player {
       if (canCarry(thing)) {
         pack.add(thing); // got it
         return thing;
+      }
+      //Do not allow user to pick up a zombie
+      else if(carryZombie(thing)){
+        location.add(thing); // put it back.
+        Thing zombie = new Thing("zombie");
+        return zombie;
       }
       else {
         location.add(thing); // put it back. That was too much.

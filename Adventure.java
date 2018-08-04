@@ -10,7 +10,7 @@ class Adventure {
 	public static void main(String args[]) throws IOException {
 		String intro = "Welcome to Zombie Buster.\n" +
                        "You can move around by clicking north, south, east, or west.\n" +
-                       "You can see what is in the room your are in by clicking look.\n" +
+                       "You can see what is in the room you are in by clicking look.\n" +
                        "You can pick things up by clicking 'pickup thing' where thing is what you see in the room.\n"+
                        "You can drop things you are carrying by clicking 'drop thing' where thing names someting you have.\n"+
                        "You can see your status by clicking status and quit by clicking quit.\n"+
@@ -35,7 +35,7 @@ class Adventure {
     JButton launch = new JButton("launch");
     JButton status = new JButton("status");
     JPanel buttons = new JPanel();
-    buttons.setLayout(new GridLayout(6,2));
+    buttons.setLayout(new GridLayout(6,5));
     buttons.add(north);
     buttons.add(east);
     buttons.add(south);
@@ -49,13 +49,15 @@ class Adventure {
     buttons.add(quit);
     buttons.add(status);
     pane.add(buttons, BorderLayout.WEST);
-    JTextArea output = new JTextArea(20, 20);
+    JTextArea output = new JTextArea(20, 60);
   
     output.setText(intro);
-    pane.add(output, BorderLayout.EAST);
+    pane.add(output, BorderLayout.CENTER);
     Player player = new Player();
+    Zombie zombieA = new Zombie();
+    Zombie zombieB = new Zombie();
     Ammo ammo = new Ammo();
-    AdventureListener listener = new AdventureListener(player, zombie, ammo, output);
+    AdventureListener listener = new AdventureListener(player, zombieA, zombieB, ammo, output);
     quit.addActionListener(listener);
     north.addActionListener(listener);
     south.addActionListener(listener);
@@ -186,8 +188,11 @@ class Adventure {
   static String pickup(Player player, String what) {
     if (player.getLocation().contains(what)) {
       Thing thing = player.pickup(what);
-      if (thing != null) {
+      if (thing != null && !thing.name().equals("zombie") ) {
         return "You now have " + thing;
+      }
+      else if(thing.name().equals("zombie")){
+      	return "You can't carry a zombie silly";
       }
       else {
         return "You can't carry that. You may need to drop something first.";
