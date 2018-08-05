@@ -40,8 +40,10 @@ class AdventureListener implements ActionListener {
     else if(e.getActionCommand().equals("north")) {
       action = Adventure.enter(player, player.getLocation().north());
       //zombieHp = 1; //This just sets the zombies health back to one after you leave a room
-        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 || 
-            zombieB.getZombieHp() != 0)) {//checks to see if there is a zombie
+        if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() != 0) {//checks to see if there is a zombie
+          action = Adventure.enter(player, player.getLocation()) + "A zombie launches itself at you from the corner of the room";
+        }
+        if(player.getLocation().contains("zombie") && zombieB.getZombieHp() != 0) {//checks to see if there is a zombie
           action = Adventure.enter(player, player.getLocation()) + "A zombie launches itself at you from the corner of the room";
         }
     }
@@ -49,7 +51,10 @@ class AdventureListener implements ActionListener {
      else if(e.getActionCommand().equals("south")) {
        action = Adventure.enter(player, player.getLocation().south());
        //zombieHp = 1;
-        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
+        if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() != 0) {
+          action =  Adventure.enter(player, player.getLocation()) + "You hear some growling in the dark room";
+        }
+        if(player.getLocation().contains("zombie") && zombieB.getZombieHp() != 0) {
           action =  Adventure.enter(player, player.getLocation()) + "You hear some growling in the dark room";
         }
       }
@@ -57,7 +62,10 @@ class AdventureListener implements ActionListener {
      else if (e.getActionCommand().equals("east")) {
        action = Adventure.enter(player, player.getLocation().east());
        //zombieHp = 1;
-        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
+        if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() != 0) {
+          action =  Adventure.enter(player, player.getLocation()) + "A zombie launches at you";
+        }
+        if(player.getLocation().contains("zombie") && zombieB.getZombieHp() != 0) {
           action =  Adventure.enter(player, player.getLocation()) + "A zombie launches at you";
         }
       }
@@ -65,7 +73,10 @@ class AdventureListener implements ActionListener {
       else if (e.getActionCommand().equals("west")) {
         action = Adventure.enter(player, player.getLocation().west());
         //zombieHp = 1;
-        if(player.getLocation().contains("zombie") || player.getLocation().contains("bloody zombie") && (zombieA.getZombieHp() != 0 && zombieB.getZombieHp() != 0)) {
+        if(player.getLocation().contains("bloody zombie") && zombieA.getZombieHp() != 0) {
+          action = Adventure.enter(player, player.getLocation()) + "You smell the rotten flesh of a zombie in the room";
+        }
+        if(player.getLocation().contains("zombie") && zombieB.getZombieHp() != 0) {
           action = Adventure.enter(player, player.getLocation()) + "You smell the rotten flesh of a zombie in the room";
         }
       }
@@ -176,12 +187,9 @@ class AdventureListener implements ActionListener {
           "\nhealth = " + player.getHealth();
         }
       }
-          
-      
-    
+
       output.setText(action);
       
   }
-  
    
 }
